@@ -12,7 +12,7 @@
 # REQUIREMENTS: ---
 #         BUGS: ---
 #        NOTES: ---
-#       AUTHOR: Your Name (), 
+#       AUTHOR: Mike Giemsa, Franco Grothe 
 # ORGANIZATION: FH Südwestfalen, Iserlohn
 #      VERSION: 1.0
 #      CREATED: 22.04.2016 11:06:26
