@@ -76,17 +76,27 @@ $WIDGETS{'Notebook'}->pack(-fill => 'both', -expand => 1,);
 $WIDGETS{'FrameCPU'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(-width => $width,
 																-height => 200,
 																-text => 'CPU',)->pack();
-for(my $i = 0; $i< $CPUanz; $i++){
-	$WIDGETS{ "LabelCPU" . $i } = $WIDGETS{'FrameCPU'}->Label(	-text  => "CPU" . $i,
+for(my $i = 1; $i<= $CPUanz; $i++){
+	$WIDGETS{"LabelCPU" . $i} = $WIDGETS{'FrameCPU'}->Label(	-text  => "CPU" . $i,
 																	-width => 6)->pack();
 	$WIDGETS{"CPU.$i.Progress"} = $WIDGETS{'FrameCPU'}
 	  ->ProgressBar( -colors => [ 0, 'green', 70, 'yellow', 90, 'red' ] )->pack();
+	
+	#===================================================================#
+	#	Label und ProgressBar ausrichten								#
+	
+	$WIDGETS{"LabelCPU" . $i}->grid(
+	-row    => $i,
+	-column => 0);
+	
+	$WIDGETS{"CPU.$i.Progress"}->grid(
+	-row    => $i,
+	-column => 1);
 }
+
+
 															
-															
-#===================================================================#
-#	MainWindow														#
-#===================================================================#																						
+																																				
 $WIDGETS{'FrameRAM'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(-width => $width,
     															-height => 50,
 																-text => 'RAM',)->pack(-pady => 5);
@@ -98,9 +108,5 @@ $WIDGETS{'FrameDISK'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(-width => $widt
 $WIDGETS{'FrameNET'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(-width => $width,
     															-height => 50,
 																-text => 'NETWORK',)->pack(-pady => 5);																						
-
-
-
-
 
 MainLoop();
