@@ -58,44 +58,32 @@ $WIDGETS{'Notebook'} = $mw->NoteBook();
 $WIDGETS{'NotebookRessourcen'} = $WIDGETS{'Notebook'}->add("Ressourcen", 
 	-label => "Ressourcen");
 	
-$WIDGETS{'NotebookRessourcen'}->Label();
-
 $WIDGETS{'NotebookProzesse'} = $WIDGETS{'Notebook'}->add("Prozesse", 
-	-label => "Prozesse");
-	
-$WIDGETS{'NotebookProzesse'}->Label();
-
-$WIDGETS{'Notebook'}->pack(-fill => 'both', -expand => 1,);
+	-label => "Prozesse");	
 
 $WIDGETS{'Notebook'}->grid(
 	-row    => 0,
-	-column => 0,
-	-sticky => "nsew");
+	-column => 0);
+
+
 
 
 #===================================================================#
 #	Ressourcen - LabelFrames erstellen								#
 #===================================================================#
 $WIDGETS{'FrameCPU'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(
-	-width => $width,
 	-text => 'CPU');
 	
 $WIDGETS{'FrameRAM'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(
-	-width => $width,
-	-height => 50,
-	-text => 'RAM',);
-	
-
+	-text => 'RAM');
 	
 $WIDGETS{'FrameDISK'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(
-	-width => $width,
 	-height => 50,
-	-text => 'DISKS',);
+	-text => 'DISKS');
 	
 $WIDGETS{'FrameNET'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(
-	-width => $width,
 	-height => 50,
-	-text => 'NETWORK',);
+	-text => 'NETWORK');
 	
 
 #===================================================================#
@@ -104,7 +92,7 @@ $WIDGETS{'FrameNET'}=$WIDGETS{'NotebookRessourcen'}->Labelframe(
 $WIDGETS{'FrameCPU'}->grid(
 	-row    => 0,
 	-column => 0,
-	-sticky => "nsew");	#?????????
+	-sticky => 'nsew');	#?????????
 	
 $WIDGETS{'FrameRAM'}->grid(
 	-row    => 1,
@@ -120,7 +108,8 @@ $WIDGETS{'FrameNET'}->grid(
 	-row    => 3,
 	-column => 0,
 	-sticky => "nsew");
-		
+
+my $cpu;	
 
 #===================================================================#
 #	CPU																#
@@ -128,17 +117,20 @@ $WIDGETS{'FrameNET'}->grid(
 	
 for(my $i = 1; $i<= $CPUanz; $i++){
 	$WIDGETS{"LabelCPU" . $i} = $WIDGETS{'FrameCPU'}->Label(	
-		-text  => "CPU" . $i,
-		-width => 6);
+		-text  => "CPU" . $i . ":  ",
+		-anchor => 'e');
 	
 	$WIDGETS{"CPU$i"."Progress"} = $WIDGETS{'FrameCPU'}->ProgressBar( 
 		-colors => [ 0, 'green', 70, 'yellow', 90, 'red' ], 
-		-width => 13, 
-		-length => 150 );
+	#	-width => 15, 
+		-length => 200 
+	);
 	  
 	$WIDGETS{"CPU$i"."Used"} = $WIDGETS{'FrameCPU'}->Label(	
 		-text  => "99p",
-		-width => 5);
+		-anchor => 'w',
+		-width => 5,
+		-textvariable => \$cpu);
 																	
 	#===================================================================#
 	#	CPU-Label, ProgressBar und Percentage ausrichten				#
@@ -146,94 +138,192 @@ for(my $i = 1; $i<= $CPUanz; $i++){
 	$WIDGETS{"LabelCPU" . $i}->grid(
 	-row    => $i,
 	-column => 0,
+	-sticky => 'w',
 	-in 	=> $WIDGETS{"FrameCPU"});
 	
 	$WIDGETS{"CPU$i"."Progress"}->grid(
 	-row    => $i,
 	-column => 1,
+	-sticky => 'ew',
 	-in 	=> $WIDGETS{"FrameCPU"});
 	
 	$WIDGETS{"CPU$i"."Used"}->grid(
 	-row    => $i,
 	-column => 2,
+	-sticky => 'ew',
 	-in 	=> $WIDGETS{"FrameCPU"});
 
 }
-$WIDGETS{"CPUCanvas"}=$WIDGETS{FrameCPU}->Canvas(
-	-height => 40,
-	-width => 280,
-	-borderwidth => 0,
-	-background => 'white');
+
+my $canHeight	= 60;
+my $canWidth	= 350;
+
+$WIDGETS{"CPUCanvas"} = $WIDGETS{FrameCPU}->Canvas(
+	-height => $canHeight,
+	-width => $canWidth,
+	-background => 'white',
+	-borderwidth => 1,
+	-relief => 'sunken');
+	
+$WIDGETS{"CPUCanvas"}->createGrid(3,3, ($canWidth/8)-2, ($canHeight/2)+2);
+	
+#### 100% ####	
+$WIDGETS{"CPUCanvas"}->createText(19, 8, -text => "100%");
+
+#### 0%	####	
+$WIDGETS{"CPUCanvas"}->createText(11, $canHeight-4,-text => "0%");
+
 	
 	$WIDGETS{"CPUCanvas"}->grid(
-	-row    => 5,
-	-column => 0,
-	-sticky => "nsew",
+	-row    => 6,
+	-columnspan => 3,
 	-in 	=> $WIDGETS{"FrameCPU"});
+	
+	
+	
+
 	
 
 
 #===================================================================#
 #	RAM																#														
-																																				
-#															
-#$WIDGETS{"LabelRAM"} = $WIDGETS{'FrameRAM'}->Label(	
-#	-text  => "RAM",
-#	-width => 6)->pack();
+					
+					
 #	
-#$WIDGETS{"RAMProgress"} = $WIDGETS{'FrameRAM'}->ProgressBar( 
-#	  -colors => [ 0, 'green', 70, 'yellow', 90, 'red' ], 
-#	  -width => 13, 
-#	  -length => 150 )->pack();
+#for(my $i = 1; $i<= $CPUanz; $i++){
+#	$WIDGETS{"LabelRAM" . $i} = $WIDGETS{'FrameRAM'}->Label(	
+#		-text  => "  CPU" . $i,
+#		-width => 10,
+#		-anchor => 'w');
+#	
+#	$WIDGETS{"RAM$i"."Progress"} = $WIDGETS{'FrameRAM'}->ProgressBar( 
+#		-colors => [ 0, 'green', 70, 'yellow', 90, 'red' ], 
+#	#	-width => 15, 
+#		-length => 200 
+#	);
 #	  
-#$WIDGETS{"RAMUsed"} = $WIDGETS{'FrameRAM'}->Label(	
-#	-text  => "2048/4096",
-#	-width => 10)->pack();		
+#	$WIDGETS{"RAM$i"."Used"} = $WIDGETS{'FrameRAM'}->Label(	
+#		-text  => "99p",
+#		-anchor => 'e',
+#		-width => 10
+#		);
+#			
+#		
+#			
+#	$WIDGETS{"LabelRAM" . $i}->grid(
+#	-row    => $i,
+#	-column => 0,
+#	-sticky => 'ew',
+#	-in 	=> $WIDGETS{"FrameRAM"});
 #	
+#	$WIDGETS{"RAM$i"."Progress"}->grid(
+#	-row    => $i,
+#	-column => 1,
+#	-sticky => 'ew',
+#	-in 	=> $WIDGETS{"FrameRAM"});
 #	
-#	
+#	$WIDGETS{"RAM$i"."Used"}->grid(
+#	-row    => $i,
+#	-column => 2,
+#	-sticky => 'ew',
+#	-in 	=> $WIDGETS{"FrameRAM"});
+#}																														
+															
+$WIDGETS{"LabelRAM"} = $WIDGETS{'FrameRAM'}->Label(	
+	-text  => "RAM",
+	-anchor => 'w');
+	
+$WIDGETS{"RAMProgress"} = $WIDGETS{'FrameRAM'}->ProgressBar( 
+	-colors => [ 0, 'green', 70, 'yellow', 90, 'red' ], 
+	#-width => 15,
+	-length => 200,
+	-blocks => 1
+	); 
+	  
+$WIDGETS{"RAMUsed"} = $WIDGETS{'FrameRAM'}->Label(	
+	-text  => "4096",
+	-anchor => 'e');	
+	
+
+		$WIDGETS{"LabelRAM"}->grid(
+	-row    => 0,
+	-column => 0,
+	-sticky => 'ew',
+	-in 	=> $WIDGETS{"FrameRAM"});
+	
+		$WIDGETS{"RAMProgress"}->grid(
+	-row    => 0,
+	-column => 1,
+	-sticky => 'ew',
+	-in 	=> $WIDGETS{"FrameRAM"});
+	
+		$WIDGETS{"RAMUsed"}->grid(
+	-row    => 0,
+	-column => 2,
+	-sticky => 'ew',
+	-in 	=> $WIDGETS{"FrameRAM"});
+	
+	
 ##===================================================================#
 ##	DISK															#															
 #																
 #
 #	
-##===================================================================#
-##	Network															#	
-#															
-#
-#
-#$WIDGETS{"LabelNETDown"} = $WIDGETS{'FrameNET'}->Label(	
-#	-text  => "Download: ",
-#	-width => 8)->pack();	
-#	
-#$WIDGETS{"NETDown"} = $WIDGETS{'FrameNET'}->Label(	
-#	-text  => "300Kb/s ",
-#	-width => 9)->pack();	
-#
-#$WIDGETS{"LabelNETUp"} = $WIDGETS{'FrameNET'}->Label(	
-#	-text  => "Upload: ",
-#	-width => 8)->pack();	
-#
-#$WIDGETS{"NETUp"} = $WIDGETS{'FrameNET'}->Label(	
-#	-text  => "100Kb/s ",
-#	-width => 9)->pack();
+#===================================================================#
+#	Network															#	
+															
 
-#$WIDGETS{"LabelNETDown"}->grid(
-#	-row    => 0,
-#	-column => 0);
-#
-#$WIDGETS{"NETDown"}->grid(
-#	-row    => 0,
-#	-column => 1);	
-#	
-#$WIDGETS{"LabelNETUp"}->grid(
-#	-row    => 0,
-#	-column => 2);	
-#	
-#$WIDGETS{"NETUp"}->grid(
-#	-row    => 0,
-#	-column => 3);		
 
-																			
+$WIDGETS{"LabelNETDown"} = $WIDGETS{'FrameNET'}->Label(	
+	-text  => "Download: ");	
+	
+$WIDGETS{"NETDown"} = $WIDGETS{'FrameNET'}->Label(	
+	-text  => "300Kb/s ");	
 
-MainLoop();
+$WIDGETS{"LabelNETUp"} = $WIDGETS{'FrameNET'}->Label(	
+	-text  => "Upload: ");	
+
+$WIDGETS{"NETUp"} = $WIDGETS{'FrameNET'}->Label(	
+	-text  => "100Kb/s ");
+
+$WIDGETS{"LabelNETDown"}->grid(
+	-row    => 0,
+	-column => 0,
+	-in => $WIDGETS{"FrameNET"});
+
+$WIDGETS{"NETDown"}->grid(
+	-row    => 0,
+	-column => 1,
+	-in => $WIDGETS{"FrameNET"});	
+	
+$WIDGETS{"LabelNETUp"}->grid(
+	-row    => 0,
+	-column => 2,
+	-in => $WIDGETS{"FrameNET"});	
+	
+$WIDGETS{"NETUp"}->grid(
+	-row    => 0,
+	-column => 3,
+	-in => $WIDGETS{"FrameNET"});		
+
+my $n = 10;
+
+
+$mw->repeat( 20 => \&run );
+MainLoop;
+
+sub run{
+
+		if($n == 101){
+			$n = 0;
+		}
+		$WIDGETS{"RAMProgress"}->value($n);
+		$WIDGETS{"CPU1Progress"}->value($n);
+		
+		$cpu = "  $n" . " %";
+		$n += 1;
+		
+		
+}																	
+
+
