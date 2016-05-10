@@ -108,7 +108,7 @@ $WIDGETS{'FrameNET'}->grid(
 #===================================================================#
 #	CPU																#
 my $cpu;															
-	
+
 for(my $i = 1; $i<= $CPUanz; $i++){
 	$WIDGETS{"LabelCPU" . $i} = $WIDGETS{'FrameCPU'}->Label(	
 		-text  => "CPU" . $i . ": ",
@@ -284,10 +284,37 @@ $WIDGETS{"NETUp"}->grid(
 my $n = 10;
 
 
-$mw->repeat( 20 => \&run );
+$mw->repeat( 20 => \&update );
 MainLoop;
 
-sub run{
+
+sub initialise{
+	#initialisieren aller sachen... z.B. Anzahl der CPUs, Gesamt RAM...	
+}
+
+sub updateCPU{
+	#auslesen der neuen werte und ausgeben in der GUI
+}
+
+sub updateRAM{
+	
+}
+
+sub updateDISK{
+	
+}
+
+sub updateNET{
+	
+}
+
+
+sub update{
+	
+	#updateCPU();
+	#updateRAM();
+	#updateDISK();
+	#updateNET();
 
 		if($n == 101){
 			$n = 0;
@@ -299,7 +326,7 @@ sub run{
 		
 		$cpu = "  $n" . " %";
 		$n += 1;
-		
+	
 		
 }																	
 
