@@ -30,6 +30,10 @@ use Tk::NoteBook; 	#Reiter
 use Tk::Labelframe; #Frame mit Label
 use Tk::ProgressBar;
 
+use Sys::Statistics::Linux;
+
+my $total;
+
 #===================================================================#
 #	Globale Variablen												#
 #===================================================================#
@@ -37,7 +41,11 @@ use Tk::ProgressBar;
 my %WIDGETS; 				#enthält alle Widgets
 
 my $width = 370;
-my $CPUanz = 4;
+my $CPUanz;
+
+my $lxs;
+
+initialise();
 
 #===================================================================#
 #	MainWindow														#
@@ -109,7 +117,7 @@ $WIDGETS{'FrameNET'}->grid(
 #	CPU																#
 my $cpu;															
 
-for(my $i = 1; $i<= $CPUanz; $i++){
+for(my $i = 0; $i< $CPUanz; $i++){
 	$WIDGETS{"LabelCPU" . $i} = $WIDGETS{'FrameCPU'}->Label(	
 		-text  => "CPU" . $i . ": ",
 		-anchor => 'e',
@@ -119,7 +127,7 @@ for(my $i = 1; $i<= $CPUanz; $i++){
 		-colors => [ 0, 'green', 65, 'yellow', 85, 'red' ], 
 		-width => 15, 
 		-length => 250,
-		-blocks => 1 
+		-blocks => 100,
 	);
 	  
 	$WIDGETS{"CPU$i"."Used"} = $WIDGETS{'FrameCPU'}->Label(	
@@ -192,7 +200,8 @@ $WIDGETS{'LabelCPUGesamt'}->grid(
 #	
 #$WIDGETS{"LabelRAMTotalUsed"} = $WIDGETS{'FrameRAM'}->Label(	
 #	-text  => "16000/16000 KB/s");	
-																			
+
+my $usedRAM;																		
 															
 $WIDGETS{"LabelRAM"} = $WIDGETS{'FrameRAM'}->Label(	
 	-text  => "RAM: ",
@@ -206,11 +215,11 @@ $WIDGETS{"RAMProgress"} = $WIDGETS{'FrameRAM'}->ProgressBar(
 	-length => 250,
 	-blocks => 1
 	); 
-	  
+	
 $WIDGETS{"RAMUsed"} = $WIDGETS{'FrameRAM'}->Label(	
 	-width => 5,
 	-anchor => 'e',
-	-textvariable => \$cpu
+	-textvariable => \$usedRAM
 	);	
 	
 #$WIDGETS{"LabelRAMTotal"}->grid(
@@ -284,20 +293,49 @@ $WIDGETS{"NETUp"}->grid(
 my $n = 10;
 
 
-$mw->repeat( 20 => \&update );
+$mw->repeat( 1000 => \&update );
 MainLoop;
 
 
 sub initialise{
 	#initialisieren aller sachen... z.B. Anzahl der CPUs, Gesamt RAM...	
+	
+	
+	$lxs = Sys::Statistics::Linux->new(
+        sysinfo  => 1,
+        cpustats => 1,
+        memstats => 1,
+        diskusage => 1,
+        netstats => 1);
+        
+    #### Anzahl der CPUs ermitteln ####    
+	$CPUanz = $lxs->get()->sysinfo->{countcpus};
+	
 }
 
 sub updateCPU{
 	#auslesen der neuen werte und ausgeben in der GUI
+	
+	my $total;
+	 my $stat = $lxs->get()->{cpustats};
+	
+	for(my $i = 0; $i < $CPUanz; $i++){
+		$total = int( $stat->{"cpu" . "$i"}->{total});
+			$WIDGETS{"CPU". $i . "Progress"}->value($total);
+			$cpu = "$total" . " %";
+		}	
 }
 
 sub updateRAM{
+	my $total;
+	my $stat = $lxs->get()->{memstats};
 	
+	$total = int(($stat->{memused}  / $stat->{memtotal}) * 100) ;
+	
+	
+	$WIDGETS{"RAMProgress"}->value($total);
+	$usedRAM = "$total" . " %";
+
 }
 
 sub updateDISK{
@@ -311,22 +349,10 @@ sub updateNET{
 
 sub update{
 	
-	#updateCPU();
-	#updateRAM();
+	updateCPU();
+	updateRAM();
 	#updateDISK();
 	#updateNET();
-
-		if($n == 101){
-			$n = 0;
-		}
-		$WIDGETS{"RAMProgress"}->value($n);
-		for(my $i = 1; $i <= $CPUanz; $i++){
-			$WIDGETS{"CPU". $i . "Progress"}->value($n);
-		}
-		
-		$cpu = "  $n" . " %";
-		$n += 1;
-	
 		
 }																	
 
